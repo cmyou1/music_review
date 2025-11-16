@@ -1,0 +1,42 @@
+[
+  {
+    "title": "Midnight Echoes",
+    "artist": "Studio Stub",
+    "bpm": 92,
+    "genre": "lofi noise",
+    "tags": ["lofi noise", "ambient fx", "bass warm", "vocal airy"],
+    "preview_url": "https://www.youtube.com/watch?v=HgzGwKwLmgM"
+  },
+  {
+    "title": "Neon Drift",
+    "artist": "Placeholder Ensemble",
+    "bpm": 120,
+    "genre": "synth pad",
+    "tags": ["synth pad", "percussion dry", "bright lead", "ambient fx"],
+    "preview_url": "https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC"
+  },
+  {
+    "title": "Cafe Horizon",
+    "artist": "Loft Collective",
+    "bpm": 85,
+    "genre": "acoustic guitar",
+    "tags": ["acoustic guitar", "strings", "choir lush", "piano"],
+    "preview_url": "https://soundcloud.com/platform/cafe-horizon"
+  },
+  {
+    "title": "Analog Bloom",
+    "artist": "Tape Saturation",
+    "bpm": 72,
+    "genre": "percussion dry",
+    "tags": ["percussion dry", "bass warm", "lofi noise", "ambient fx"],
+    "preview_url": "https://example.com/analog-bloom"
+  },
+  {
+    "title": "Stellar Fade",
+    "artist": "Orbit Trails",
+    "bpm": 132,
+    "genre": "synth pad",
+    "tags": ["synth pad", "bright lead", "ambient fx", "strings"],
+    "preview_url": "https://example.com/stellar-fade"
+  }
+]
