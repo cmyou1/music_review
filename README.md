@@ -64,8 +64,8 @@ LLM ì—°ê²° í™•ì¸ì„ ìœ„í•´ì„œëŠ” `OPENAI_API_KEY`ë¥¼ ì„¤ì •í•œ ë’¤ `curl`ì´ë‚˜
 
 
 ## Feature stack (Late Fusion)
-- **HTSAT encoder**: ¾Ç±â/±¸Á¶ ÀÌº¥Æ®¸¦ ¿ä¾àÇØ ÅÂ±× ÈÄº¸¸¦ ¸¸µì´Ï´Ù.
-- **CLAP analyzer (stub)**: ÆÄÇü+BPM+spectral brightness¸¦ ÀÌ¿ëÇØ °¨Á¤/ºĞÀ§±â ÈùÆ®¿Í ÅØ½ºÆ® ¸ÅÄª Á¡¼ö¸¦ »ı¼ºÇÕ´Ï´Ù.
-- **Librosa BPM & spectral stats**: tempo/¿¡³ÊÁö¿Í spectral centroid¡¤rolloff¡¤bandwidth¡¤ZCRÀ» ¿ä¾àÇØ ¹àÀ½/µû¶æÇÔ/»şÇÁÇÔÀ» ¼öÄ¡È­ÇÕ´Ï´Ù.
-- ÀÌ 4°³ÀÇ ½ÅÈ£¸¦ extract_features()¿¡¼­ ÇÏ³ªÀÇ JSONÀ¸·Î ¹­°í, LLM ÇÁ·ÒÇÁÆ®¿¡´Â °¢ ¿ä¾à°ª¸¸ ³Ö¾î Late Fusion È¿°ú¸¦ ³À´Ï´Ù.
+- **HTSAT encoder**: ì•…ê¸°/ìŒí–¥ ì´ë²¤íŠ¸ë¥¼ í¬ì°©í•œ íƒœê·¸ ì„ë² ë”©ì„ ìƒì„±í•©ë‹ˆë‹¤.
+- **CLAP analyzer (stub)**: ì¥ë¥´+BPM+spectral brightnessë¥¼ ì´ìš©í•œ ë¶„ìœ„ê¸°/ì—ë„ˆì§€ ë²¡í„°ë¥¼ í…ìŠ¤íŠ¸ ë§¤ì¹­ í˜•íƒœë¡œ ì œê³µí•©ë‹ˆë‹¤.
+- **Librosa BPM & spectral stats**: tempo/í‚¤ê°ê°ê³¼ spectral centroidÂ·rolloffÂ·bandwidthÂ·ZCRì„ ì¶”ì¶œí•´ ë°ê¸°/ë¬´ê²Œê°/ë‹¤ì´ë‚˜ë¯¹ì„ ì •ëŸ‰í™”í•©ë‹ˆë‹¤.
+- ì´ 4ê°€ì§€ ì‹ í˜¸ë¥¼ extract_features()ì—ì„œ í•˜ë‚˜ì˜ JSONìœ¼ë¡œ ë³‘í•©, LLM í”„ë¡¬í”„íŠ¸ì— ì§ì ‘ ë„£ì–´ì£¼ì–´ Late Fusion íš¨ê³¼ë¥¼ ëƒ…ë‹ˆë‹¤.
 
