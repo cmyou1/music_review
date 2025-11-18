@@ -34,6 +34,7 @@ class HTSATEncoder:
     embedding_dim: int = 1024
     sample_rate: Optional[int] = None
     use_stub: bool = field(default=False, init=False)
+    device: str = field(default="cpu", init=False)
     _model: Optional["AutoModel"] = field(default=None, init=False, repr=False)
     _feature_extractor: Optional["AutoFeatureExtractor"] = field(default=None, init=False, repr=False)
 
@@ -53,6 +54,12 @@ class HTSATEncoder:
             self.use_stub = True
             return
         try:
+            if torch.cuda.is_available():
+                self.device = "cuda"
+                logger.info("HTSAT encoder is using CUDA for inference.")
+            else:
+                self.device = "cpu"
+                logger.info("HTSAT encoder is using CPU for inference.")
             pretrained_ref = self.local_path if self.local_path else self.model_name
             self._feature_extractor = AutoFeatureExtractor.from_pretrained(
                 pretrained_ref, cache_dir=self.cache_dir, trust_remote_code=True
@@ -62,7 +69,7 @@ class HTSATEncoder:
             )
             self.embedding_dim = getattr(self._model.config, "hidden_size", self.embedding_dim)
             self.sample_rate = getattr(self._feature_extractor, "sampling_rate", None)
-            self._model.eval()
+            self._model.to(self.device).eval()
         except Exception as exc:  # pragma: no cover
             logger.warning("HTSAT 모델을 불러오지 못했습니다. 임시 임베딩을 사용합니다: %s", exc)
             self.use_stub = True
@@ -89,6 +96,7 @@ class HTSATEncoder:
                 inputs = self._feature_extractor(
                     waveform, sampling_rate=sample_rate, return_tensors="pt", padding=True
                 )
+                inputs = {key: value.to(self.device) for key, value in inputs.items()}
                 outputs = self._model(**inputs)
                 hidden = outputs.last_hidden_state  # (batch, seq, hidden)
                 embedding = hidden.mean(dim=1).squeeze(0)

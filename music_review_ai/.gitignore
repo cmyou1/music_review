@@ -1,17 +1,41 @@
+# Python
 .venv/
 __pycache__/
 .mypy_cache/
 .pytest_cache/
 *.pyc
 
+# Frontend
 frontend/.next/
 frontend/node_modules/
 frontend/.env.local
+
+# Environment variables
 .env
 .env.local
 
+# Logs and data
 backend/feedback_logs/
 backend/reviews/
-
 *.log
 *.jsonl
+
+# Model files (large)
+models/
+.cache/
+
+# Temporary files
+temp_*.py
+debug_*.py
+*.json.tmp
+nul
+response.html
+
+# Claude Code settings (personal)
+.claude/
+
+# Data files
+data/sample_songs/*.review.json
+latest.json
+resp.json
+temp_resp.json

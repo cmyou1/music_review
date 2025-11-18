@@ -153,6 +153,7 @@ async def extract_features(upload_file) -> Dict:
     tag_scores = tagger.predict(tag_waveform, sample_rate=16000)
     sorted_tags = sorted(tag_scores.items(), key=lambda x: x[1], reverse=True)
     top_tags = [name for name, _ in sorted_tags[:5]]
+    genre = top_tags[0] if top_tags else "unknown"
     # 상위 악기 확률 저장 (LLM 프롬프트용)
     top_instruments = {name: round(score, 3) for name, score in sorted_tags[:5]}
 
@@ -166,18 +167,12 @@ async def extract_features(upload_file) -> Dict:
         clap_sr = 48000
     clap_summary = clap.analyze(clap_waveform, clap_sr)
 
-    logger.info(
-        "추출된 특징 - bpm: %.2f duration: %.2f genre: %s tags: %s",
-        tempo,
-        duration,
-        top_tags[0] if top_tags else "unknown",
-        top_tags,
-    )
+    logger.info("추출특징 - bpm: %.2f duration: %.2f genre: %s tags: %s", tempo, duration, genre, top_tags)
 
     return {
         "bpm": float(tempo),
         "duration": float(duration),
-        "genre": top_tags[0] if top_tags else "unknown",
+        "genre": genre,
         "tags": top_tags,
         "instruments": top_instruments,
         "embedding_stats": _summarize_embedding(embedding),

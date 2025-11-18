@@ -4,6 +4,7 @@ librosa==0.10.2.post1
 soundfile==0.12.1
 numpy==1.26.4
 torch==2.2.2
+torchaudio==2.2.2
 transformers==4.40.0
 huggingface-hub==0.23.0
 pydantic==2.9.2

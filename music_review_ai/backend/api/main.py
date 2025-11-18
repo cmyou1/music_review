@@ -2,6 +2,8 @@
 FastAPI entrypoint for the music review backend.
 """
 
+from typing import Optional
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -25,7 +27,19 @@ async def health_check():
     return {"status": "ok"}
 
 
+def _determine_workers() -> Optional[int]:
+    if settings.api_reload:
+        return None  # reload mode already forces a single worker
+    return max(1, settings.api_web_concurrency)
+
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("backend.api.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "backend.api.main:app",
+        host=settings.api_host,
+        port=settings.api_port,
+        reload=settings.api_reload,
+        workers=_determine_workers(),
+    )

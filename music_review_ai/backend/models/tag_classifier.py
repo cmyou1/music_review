@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class TagClassifier:
     """
     Audio tag classifier using pre-trained AudioSet model from Hugging Face.
-    Maps AudioSet labels to music-specific instrument tags.
+    Returns the original AudioSet labels to maximise fidelity.
     """
     model_name: str = "MIT/ast-finetuned-audioset-10-10-0.4593"
     cache_dir: Optional[Path] = None
@@ -28,50 +28,8 @@ class TagClassifier:
     _model: Optional[any] = None
     _processor: Optional[any] = None
 
-    # AudioSet label -> Our tag mapping
-    LABEL_MAPPING = {
-        # Percussion
-        "Bass drum": "kick punchy",
-        "Drum": "percussion dry",
-        "Drum kit": "percussion dry",
-        "Snare drum": "snare crisp",
-        "Hi-hat": "percussion dry",
-
-        # Bass
-        "Bass guitar": "bass warm",
-        "Double bass": "bass warm",
-        "Synthesizer": "synth pad",
-
-        # Strings
-        "Violin, fiddle": "strings",
-        "Cello": "strings",
-        "String section": "strings",
-
-        # Guitar
-        "Acoustic guitar": "acoustic guitar",
-        "Electric guitar": "electric guitar",
-        "Plucked string instrument": "acoustic guitar",
-
-        # Keys
-        "Piano": "piano",
-        "Electronic organ": "organ mellow",
-        "Electric piano": "piano",
-
-        # Synth/Electronic
-        "Synthesizer": "synth pad",
-        "Electronic music": "synth pad",
-        "Techno": "synth pad",
-        "House music": "synth pad",
-        "Trance music": "bright lead",
-
-        # Vocals
-        "Singing": "vocal airy",
-        "Choir": "choir lush",
-
-        # Ambient
-        "Ambient music": "ambient fx",
-        "Sound effect": "ambient fx",
-    }
+    top_k: int = 10
+    min_probability: float = 1e-4
 
     def __post_init__(self):
         if not self.use_stub:
@@ -124,28 +82,19 @@ class TagClassifier:
             # Get AudioSet labels
             audioset_labels = self._model.config.id2label
 
-            # Map to our custom tags
-            tag_scores = {}
+            label_scores = []
             for idx, prob in enumerate(probs):
-                if prob < 0.01:  # Skip very low probabilities
+                if prob < self.min_probability:
                     continue
+                label = audioset_labels.get(idx, f"label_{idx}")
+                label_scores.append((label, float(prob)))
 
-                audioset_label = audioset_labels.get(idx, "")
-                our_tag = self.LABEL_MAPPING.get(audioset_label)
+            if not label_scores:
+                return {}
 
-                if our_tag:
-                    # Accumulate scores for same tag
-                    tag_scores[our_tag] = tag_scores.get(our_tag, 0.0) + float(prob)
-
-            # Normalize
-            total = sum(tag_scores.values())
-            if total > 0:
-                tag_scores = {k: v/total for k, v in tag_scores.items()}
-
-            # Sort by probability
-            tag_scores = dict(sorted(tag_scores.items(), key=lambda x: x[1], reverse=True))
-
-            return tag_scores
+            label_scores.sort(key=lambda item: item[1], reverse=True)
+            top_scores = label_scores[: self.top_k]
+            return dict(top_scores)
 
         except Exception as e:
             logger.error(f"Tag prediction failed: {e}")

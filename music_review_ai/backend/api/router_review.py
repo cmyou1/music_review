@@ -3,6 +3,8 @@ Routers for music review operations.
 """
 
 import json
+import time
+import logging
 from datetime import datetime
 from pathlib import Path
 
@@ -12,6 +14,8 @@ from ..llm.generate_review import evaluate_user_review, generate_review
 from ..recommendations.engine import recommend
 from .utils_audio import extract_features
 from .schemas import FeedbackPayload, RecommendationFeedbackPayload, UserReviewPayload, MetaReviewRequest
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api", tags=["review"])
 
@@ -36,15 +40,37 @@ async def review_music(file: UploadFile = File(...)):
     """
     Accept an uploaded audio file and return analysis + natural language review.
     """
+    start_total = time.time()
 
     if file.content_type not in {"audio/mpeg", "audio/wav", "audio/x-wav", "audio/flac", "application/octet-stream"}:
         raise HTTPException(status_code=400, detail="지원하지 않는 오디오 형식입니다.")
 
-    features = await extract_features(file)
-    review = generate_review(features)
-    recommendations = recommend(features)
+    logger.info("⏱️ Starting /api/review request")
 
-    return {"features": features, "review": review, "recommendations": recommendations}
+    start_features = time.time()
+    features = await extract_features(file)
+    time_features = time.time() - start_features
+    logger.info(f"⏱️ Feature extraction: {time_features:.2f}s")
+
+    start_review = time.time()
+    review, review_is_fallback = generate_review(features)
+    time_review = time.time() - start_review
+    logger.info(f"⏱️ Review generation: {time_review:.2f}s")
+
+    start_rec = time.time()
+    recommendations = recommend(features)
+    time_rec = time.time() - start_rec
+    logger.info(f"⏱️ Recommendations: {time_rec:.2f}s")
+
+    time_total = time.time() - start_total
+    logger.info(f"⏱️ TOTAL TIME: {time_total:.2f}s (features: {time_features:.1f}s, review: {time_review:.1f}s, rec: {time_rec:.1f}s)")
+
+    return {
+        "features": features,
+        "review": review,
+        "review_is_fallback": review_is_fallback,
+        "recommendations": recommendations,
+    }
 
 
 @router.post("/recommendations")
@@ -90,7 +116,7 @@ async def meta_review(request: MetaReviewRequest):
     Provide an expert-style evaluation of a user-submitted review.
     """
 
-    meta_review_text = evaluate_user_review(
+    meta_review_text, meta_review_is_fallback = evaluate_user_review(
         track_title=request.track_title,
         track_artist=request.track_artist,
         review_text=request.review_text,
@@ -98,4 +124,4 @@ async def meta_review(request: MetaReviewRequest):
     log_entry = request.dict()
     log_entry["meta_review"] = meta_review_text
     _append_log(META_REVIEW_LOG, log_entry)
-    return {"meta_review": meta_review_text}
+    return {"meta_review": meta_review_text, "meta_review_is_fallback": meta_review_is_fallback}

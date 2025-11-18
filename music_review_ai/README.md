@@ -71,3 +71,10 @@ curl -X POST http://localhost:8000/api/review ^
 1. `extract_features()`에 장르/악기 태깅 모델(PANNs/HTSAT tagger) 추가
 2. 프런트엔드 업로드 UI 작성 → FastAPI와 연결
 3. 사용자 리뷰/추천/커뮤니티 기능 단계별 확장
+
+## Performance knobs
+- LLM_REQUEST_TIMEOUT / LLM_MAX_RETRIES / LLM_RETRY_BACKOFF: configure OpenAI timeout + retries.
+- API_WEB_CONCURRENCY: number of uvicorn workers when reload is disabled (e.g. API_WEB_CONCURRENCY=6 python -m backend.api.main).
+- API_RELOAD: keep false outside development so worker scaling is enabled.
+- Audio endpoints now ship lightweight embedding_stats instead of the raw vector, preventing prompt token blow-ups.
+
