@@ -7,11 +7,12 @@
 music_review_ai/
 ├── backend/          # FastAPI, 오디오 분석, LLM 연동
 │   ├── api/          # 엔드포인트 및 오디오 유틸
-│   ├── models/       # HTSAT/MERT 래퍼, 태그 분류기
+│   ├── models/       # Python 모델 래퍼, 태그 분류기
 │   ├── llm/          # LLM 클라이언트/프롬프트
 │   ├── recommendations/ # 추천 라이브러리 + 엔진
 │   └── feedback_logs/   # 피드백 JSONL/CSV
 ├── frontend/         # Next.js + Tailwind 업로드 UI
+├── models/           # HTSAT/MERT 모델 파일 (.pt, .bin)
 ├── scripts/          # 데이터/분석/다운로드 유틸
 └── data/             # 샘플 음원 및 임시 데이터
 ```
