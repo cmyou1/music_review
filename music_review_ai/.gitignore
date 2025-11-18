@@ -18,6 +18,9 @@ frontend/.env.local
 backend/feedback_logs/
 backend/reviews/
 *.log
+*_stdout.log
+*_stderr.log
+server.log
 *.jsonl
 
 # Model files (large)
@@ -37,5 +40,9 @@ response.html
 # Data files
 data/sample_songs/*.review.json
 latest.json
+last_call*.json
 resp.json
 temp_resp.json
+
+# Frontend auto-generated
+frontend/next-env.d.ts
