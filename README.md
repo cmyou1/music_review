@@ -65,8 +65,9 @@ LLM 연결 확인을 위해서는 `OPENAI_API_KEY`를 설정한 뒤 `curl`이나
 
 
 ## Feature stack (Late Fusion)
-- **HTSAT encoder**: 악기/음향 이벤트를 포착한 태그 임베딩을 생성합니다.
-- **CLAP analyzer (stub)**: 장르+BPM+spectral brightness를 이용한 분위기/에너지 벡터를 텍스트 매칭 형태로 제공합니다.
-- **Librosa BPM & spectral stats**: tempo/키감각과 spectral centroid·rolloff·bandwidth·ZCR을 추출해 밝기/무게감/다이나믹을 정량화합니다.
-- 이 4가지 신호를 extract_features()에서 하나의 JSON으로 병합, LLM 프롬프트에 직접 넣어주어 Late Fusion 효과를 냅니다.
+- **HTSAT encoder**: 기하학적 벡터를 추출해 구조 정보를 제공합니다.
+- **CLAP analyzer (stub)**: 장르·분위기·에너지 텍스트 프롬프트와의 매칭 점수를 제공합니다.
+- **Meta EnCodec timbre analyzer**: codebook 다양성과 변화율을 요약해 음색·질감에 대한 수치를 만듭니다.
+- �� 4���� ��ȣ�� 30�� ��window(15�� overlap)�� ���� ��ü���� ����·���۰� JSON���� ������, LLM ������Ʈ�� Late Fusion ����� �����մϴ�.
+- 위 4가지 신호를 extract_features()에서 JSON으로 병합해 LLM 프롬프트에 Late Fusion으로 제공합니다.
 

@@ -26,6 +26,8 @@ server.log
 # Model files (large)
 models/
 .cache/
+!backend/models/
+!backend/models/**/*.py
 
 # Temporary files
 temp_*.py
@@ -39,6 +41,7 @@ response.html
 
 # Data files
 data/sample_songs/*.review.json
+data/sample_songs/noise_test.wav
 latest.json
 last_call*.json
 resp.json

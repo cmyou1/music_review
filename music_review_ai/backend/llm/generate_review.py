@@ -94,6 +94,7 @@ def _build_prompt(features: Dict) -> str:
     instruments = features.get("instruments") or {}
     emb_char = features.get("embedding_characteristics") or {}
     emb_feat = features.get("embedding_features") or {}
+    timbre = features.get("timbre") or {}
 
     # Spectral features (음악적으로 의미 있는 특성)
     spectral_line = (
@@ -101,6 +102,12 @@ def _build_prompt(features: Dict) -> str:
         f"warmth={spectral.get('warmth', 'n/a')}, "
         f"sharpness={spectral.get('sharpness', 'n/a')}, "
         f"airiness={spectral.get('airiness', 'n/a')}"
+    )
+    dsp_line = (
+        f"spectral_flux={spectral.get('spectral_flux', 'n/a')}, "
+        f"high_band_ratio={spectral.get('high_band_ratio', 'n/a')}, "
+        f"crest_factor={spectral.get('crest_factor', 'n/a')}, "
+        f"transient_density={spectral.get('transient_density', 'n/a')}"
     )
 
     # CLAP mood (primary_prompt 사용)
@@ -131,6 +138,16 @@ def _build_prompt(features: Dict) -> str:
         f"texture_smoothness={texture:.2f}, dynamism={dynamism:.2f}, density={density:.2f}"
     )
 
+    # EnCodec timbre stats
+    timbre_desc = timbre.get("descriptor", "neutral timbre")
+    timbre_div = timbre.get("codebook_diversity", 0.5)
+    timbre_change = timbre.get("transient_change_rate", 0.5)
+    timbre_entropy = timbre.get("quantizer_entropy", 0.5)
+
+    timbre_line = (
+        f"{timbre_desc} (diversity={timbre_div:.2f}, change_rate={timbre_change:.2f}, entropy={timbre_entropy:.2f})"
+    )
+
     # Duration 표현 (범주만)
     duration_secs = features.get('duration', 0)
     if duration_secs < 90:
@@ -155,38 +172,29 @@ def _build_prompt(features: Dict) -> str:
     else:
         tempo_desc = "slow"
 
-    return f"""다음은 한 음악 트랙의 분석 결과입니다.
-각 수치는 청각적 특성을 나타내며, 리뷰에는 수치를 그대로 언급하지 말고
-음악적으로 자연스럽게 해석하여 표현해주세요.
+    return f"""음원 분석 기반 리뷰 요청입니다.
+아래 수치와 해석 규칙을 참고하여 근거 중심으로 200-250어절 내 리뷰를 작성하세요.
 
 Instruments detected: {instruments_str}
-Overall mood: {clap_primary}
+Overall mood/movement: {clap_primary} (score {clap_score:.2f}, energy cue {clap_energy:.2f})
 
-Audio features (interpret naturally):
-- Spectral: brightness={spectral.get('brightness', 0.5):.2f}, warmth={spectral.get('warmth', 0.5):.2f}, airiness={spectral.get('airiness', 0.5):.2f}
-- Musical: energy={energy:.2f}, complexity={complexity:.2f}, texture_smoothness={texture:.2f}
-- Development: dynamism={dynamism:.2f}, density={density:.2f}
+Audio features (수치는 참고용이고, 실제 문장에는 해석만 사용):
+- Spectral balance: brightness={spectral.get('brightness', 0.5):.2f}, warmth={spectral.get('warmth', 0.5):.2f}, airiness={spectral.get('airiness', 0.5):.2f}
+- DSP dynamics: {dsp_line}
+- Musical form: energy={energy:.2f}, complexity={complexity:.2f}, texture_smoothness={texture:.2f}, dynamism={dynamism:.2f}, density={density:.2f}
+- Timbre texture: {timbre_line}
 
-Track info:
-- Tempo feel: {tempo_desc}
-- Duration: {duration_desc}
+Track context: tempo feel={tempo_desc}, duration={duration_desc}, tags={tag_line}, production vibe={primary_char} (confidence {char_score:.2f})
 
-위 정보를 바탕으로 프로듀서/엔지니어 관점의 한국어 리뷰(약 200-250단어)를 작성해주세요.
-
-작성 가이드:
-- 수치를 직접 언급하지 마세요 (BPM, 퍼센트, 정확한 Hz값 등 금지)
-- 프로덕션 기술 용어를 자연스럽게 사용하세요 (EQ, 컴프레션, 리버브, 레이어링, 마스킹, 스테레오 이미징 등)
-- 믹싱 밸런스와 주파수 분리에 대해 언급하세요
-- 사운드 디자인과 악기 선택의 적절성을 평가하세요
-- 감지된 악기만 언급하고, 없는 악기를 만들어내지 마세요
-- 과도한 비유나 추상적 표현 대신 구체적인 사운드 특성을 설명하세요
-
-초점:
-1. 프로덕션 퀄리티 (믹싱, 마스터링)
-2. 사운드 디자인과 악기 처리
-3. 주파수 밸런스와 공간감
-4. 장르 특성과 전개 방식
-5. 개선 가능한 점이 있다면 건설적으로 제시
+규칙:
+1. 숫자·단위(BPM, %, Hz 등)는 리뷰에 직접 쓰지 말고 해석만 언급.
+2. spectral_flux가 높으면 글리치/퍼커시브 변화가 잦다고, 낮으면 안정적이라고 언급.
+3. high_band_ratio·brightness가 높으면 고주파·금속성·지지직 질감을, 낮으면 따뜻하고 둔탁한 톤을 설명.
+4. crest_factor·transient_density가 높으면 강한 어택/타격감을, 낮으면 부드러운 어택을 묘사.
+5. timbre descriptor·EnCodec 지표를 활용해 음색·텍스처를 구체적으로 설명.
+6. CLAP mood와 instrument 정보를 근거로 장르/분위기를 해석.
+7. 믹싱/마스터링, 공간감, 주파수 분리, 사운드 디자인 관점에서 장단점을 균형 있게 제시.
+8. 개선점은 건설적으로 제안하고, 과도한 비유 대신 실제 사운드 요소를 근거로 삼을 것.
 """
 
 

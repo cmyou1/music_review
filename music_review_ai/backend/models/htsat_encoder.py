@@ -1,9 +1,9 @@
 """
-Lightweight wrapper for loading an HTSAT encoder.
+Lightweight wrapper for loading an HTSAT encoder (MERT).
 
-In this MVP scaffold we avoid downloading the heavy checkpoint and instead
-return a deterministic zero vector so the rest of the pipeline can be wired.
-Plug the actual Hugging Face model when running in a proper environment.
+원래는 MVP 환경에서 무거운 체크포인트를 생략하기 위한 스텁을 제공했지만,
+지금은 Hugging Face에서 실제 모델을 내려받아 로딩할 수 있도록 구성되어 있다.
+torch/transformers 의존성이 없거나 모델을 찾지 못하는 경우에만 stub을 사용한다.
 """
 
 from __future__ import annotations

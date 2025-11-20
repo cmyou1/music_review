@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     htsat_cache_dir: Optional[Path] = Field(default=None, env="HTSAT_CACHE_DIR")
     htsat_model_path: Optional[Path] = Field(default=None, env="HTSAT_MODEL_PATH")
     audio_sample_rate: Optional[int] = Field(default=None, env="AUDIO_SAMPLE_RATE")
+    audio_max_duration: Optional[float] = Field(default=30.0, env="AUDIO_MAX_DURATION")
+    audio_window_hop: Optional[float] = Field(default=15.0, env="AUDIO_WINDOW_HOP")
 
     # LLM
     openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
@@ -30,6 +32,11 @@ class Settings(BaseSettings):
     clap_model_name: str = Field("laion/clap-htsat-fused", env="CLAP_MODEL_NAME")
     clap_cache_dir: Optional[Path] = Field(default=None, env="CLAP_CACHE_DIR")
     clap_model_path: Optional[Path] = Field(default=None, env="CLAP_MODEL_PATH")
+
+    # EnCodec timbre encoder
+    encodec_model_name: str = Field("facebook/encodec_24khz", env="ENCODEC_MODEL_NAME")
+    encodec_cache_dir: Optional[Path] = Field(default=None, env="ENCODEC_CACHE_DIR")
+    encodec_model_path: Optional[Path] = Field(default=None, env="ENCODEC_MODEL_PATH")
 
     # Tag classifier (AudioSet AST)
     tag_model_name: str = Field("MIT/ast-finetuned-audioset-10-10-0.4593", env="TAG_MODEL_NAME")

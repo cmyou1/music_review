@@ -93,6 +93,14 @@ def test_music_file(file_path: str, api_url: str = "http://127.0.0.1:8888"):
                         for match in top_matches[:3]:
                             print(f"      {match.get('score', 0):.3f} - {match.get('text', 'N/A')}")
 
+                timbre = features.get('timbre', {})
+                if timbre:
+                    print(f"\n  음색 텍스처 (EnCodec):")
+                    print(f"    - Descriptor: {timbre.get('descriptor', 'N/A')}")
+                    print(f"    - Diversity: {timbre.get('codebook_diversity', 0):.3f}")
+                    print(f"    - Change rate: {timbre.get('transient_change_rate', 0):.3f}")
+                    print(f"    - Entropy: {timbre.get('quantizer_entropy', 0):.3f}")
+
                 # Embedding characteristics
                 emb_char = features.get('embedding_characteristics', {})
                 if emb_char:
